@@ -5,18 +5,21 @@ import {
   DataQueryResponse,
   DataSourceApi,
   DataSourceInstanceSettings,
+  DateTime,
   FieldType,
   MutableDataFrame,
 } from '@grafana/data';
 import { getBackendSrv } from '@grafana/runtime';
 
 import {
-  ApiResponse,
+  HourlyApiResponse,
   ApiSearchStationResponse,
   defaultQuery,
   MyDataSourceOptions,
   MyQuery,
   PropertiesMap,
+  DailyApiResponse,
+  AverageTemperatureProperties,
 } from './types';
 
 export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
@@ -29,17 +32,22 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
 
   async query(options: DataQueryRequest<MyQuery>): Promise<DataQueryResponse> {
     const { range } = options;
-    const from = range!.from.format('YYYY-MM-DD');
-    const to = range!.to.format('YYYY-MM-DD');
+    const rangeIsMoreThanTenDays = range!.to.diff(range!.from, 'days') >= 10;
 
     const data = await Promise.all(
       options.targets.map(async target => {
         const query = defaults(target, defaultQuery);
-        let fetchedData: ApiResponse;
+        let fetchedData: any;
         if (query.station.id) {
-          fetchedData = await this.fetchByStationId(query.station.id, from, to);
+          fetchedData = await this.fetchByStationId(query.station.id, range!.from, range!.to, rangeIsMoreThanTenDays);
         } else if (query.latitude && query.longitude) {
-          fetchedData = await this.fetchByCoordinates(query.latitude, query.longitude, from, to);
+          fetchedData = await this.fetchByCoordinates(
+            query.latitude,
+            query.longitude,
+            range!.from,
+            range!.to,
+            rangeIsMoreThanTenDays
+          );
         } else {
           throw new Error('Either station id or coordinates have to be provided');
         }
@@ -47,15 +55,28 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
         const source = {
           refId: query.refId,
           fields: [
-            { name: 'Time', values: fetchedData.data.map((data: { time: string }) => data.time), type: FieldType.time },
+            {
+              name: 'Time',
+              values: fetchedData.data.map(
+                (data: { time?: string; time_local?: string; date?: string }) =>
+                  data.time_local || data.time || data.date
+              ),
+              type: FieldType.time,
+            },
           ],
         };
         properties.forEach(property => {
           if (PropertiesMap[property]) {
-            source.fields.push({
-              name: PropertiesMap[property].label,
-              values: fetchedData.data.map((data: { [x: string]: any }) => data[property]),
-              type: PropertiesMap[property].type,
+            let propertiesToAdd = [PropertiesMap[property]];
+            if (property === 'temp' && rangeIsMoreThanTenDays) {
+              propertiesToAdd = AverageTemperatureProperties;
+            }
+            propertiesToAdd.forEach(property => {
+              source.fields.push({
+                name: property.label,
+                values: fetchedData.data.map((data: { [x: string]: any }) => data[property.value]),
+                type: property.type,
+              });
             });
           }
         });
@@ -74,12 +95,42 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     };
   }
 
-  async fetchByStationId(stationId: string, start: string, end: string): Promise<ApiResponse> {
-    return this.doRequest('/v2/stations/hourly', { station: stationId, start, end });
+  async fetchByStationId(
+    stationId: string,
+    start: DateTime,
+    end: DateTime,
+    rangeIsMoreThanTenDays: boolean
+  ): Promise<HourlyApiResponse> {
+    return this.fetchWeatherData('/v2/stations', { station: stationId }, start, end, rangeIsMoreThanTenDays);
   }
 
-  async fetchByCoordinates(latitude: number, longitude: number, start: string, end: string): Promise<ApiResponse> {
-    return this.doRequest('/v2/point/hourly', { lat: latitude, lon: longitude, start, end });
+  async fetchByCoordinates(
+    latitude: number,
+    longitude: number,
+    start: DateTime,
+    end: DateTime,
+    rangeIsMoreThanTenDays: boolean
+  ): Promise<HourlyApiResponse> {
+    return this.fetchWeatherData('/v2/point', { lat: latitude, lon: longitude }, start, end, rangeIsMoreThanTenDays);
+  }
+
+  async fetchWeatherData(
+    url: string,
+    parameters: { [p: string]: any },
+    start: DateTime,
+    end: DateTime,
+    rangeIsMoreThanTenDays: boolean
+  ): Promise<any> {
+    const startFormatted = start.format('YYYY-MM-DD');
+    const endFormatted = end.format('YYYY-MM-DD');
+    if (rangeIsMoreThanTenDays) {
+      return this.doRequest(`${url}/daily`, { ...parameters, start: startFormatted, end: endFormatted }) as Promise<
+        DailyApiResponse
+      >;
+    }
+    return this.doRequest(`${url}/hourly`, { ...parameters, start: startFormatted, end: endFormatted }) as Promise<
+      HourlyApiResponse
+    >;
   }
 
   async fetchStations(searchTerm: string): Promise<ApiSearchStationResponse> {

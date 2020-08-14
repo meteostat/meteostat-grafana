@@ -7,6 +7,12 @@ export interface MyQuery extends DataQuery {
   properties: string[];
 }
 
+export const AverageTemperatureProperties: Array<{ label: string; value: string; type: FieldType }> = [
+  { label: 'Average Temperature (°C)', value: 'tavg', type: FieldType.number },
+  { label: 'Minimum Temperature (°C)', value: 'tmin', type: FieldType.number },
+  { label: 'Maximum Temperature (°C)', value: 'tmax', type: FieldType.number },
+];
+
 export const PropertiesMap: { [key: string]: { label: string; value: string; type: FieldType } } = {
   temp: { label: 'Temperature (°C)', value: 'temp', type: FieldType.number },
   rhum: { label: 'Relative Humidity (%)', value: 'rhum', type: FieldType.number },
@@ -25,10 +31,11 @@ export const defaultQuery: Partial<MyQuery> = {
   properties: [PropertiesMap.temp.value],
 };
 
-export interface ApiResponse {
+export interface HourlyApiResponse {
   meta: { source: string; exec_time: string; generated: string };
   data: Array<{
     time: string;
+    time_local: string;
     temp: string;
     rhum: string;
     dwpt: string;
@@ -40,6 +47,23 @@ export interface ApiResponse {
     pres: string;
     tsun: string;
     coco: string;
+  }>;
+}
+
+export interface DailyApiResponse {
+  meta: { source: string; exec_time: string; generated: string };
+  data: Array<{
+    date: string;
+    tavg: string;
+    tmin: string;
+    tmax: string;
+    prcp: string;
+    snow: string;
+    wdir: string;
+    wspd: string;
+    wpgt: string;
+    pres: string;
+    tsun: string;
   }>;
 }
 
