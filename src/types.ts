@@ -1,7 +1,7 @@
-import { DataQuery, DataSourceJsonData, FieldType } from '@grafana/data';
+import { DataQuery, DataSourceJsonData, FieldType, SelectableValue } from '@grafana/data';
 
 export interface MyQuery extends DataQuery {
-  stationId?: string;
+  station: SelectableValue;
   latitude?: number;
   longitude?: number;
   properties: string[];
@@ -40,6 +40,27 @@ export interface ApiResponse {
     pres: string;
     tsun: string;
     coco: string;
+  }>;
+}
+
+export interface ApiSearchStationResponse {
+  meta: { exec_time: string; generated: string };
+  data: Array<{
+    id: string;
+    name: {
+      [languageKey: string]: string;
+    };
+    country: string;
+    region: string;
+    national: string;
+    wmo: string;
+    icao: string;
+    iata: string;
+    latitude: number;
+    longitude: number;
+    elevation: number;
+    timezone: string;
+    active: boolean;
   }>;
 }
 

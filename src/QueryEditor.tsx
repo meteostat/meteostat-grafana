@@ -1,7 +1,7 @@
 import defaults from 'lodash/defaults';
 
 import React, { ChangeEvent, PureComponent } from 'react';
-import { Button, LegacyForms } from '@grafana/ui';
+import { AsyncSelect, Button, LegacyForms } from '@grafana/ui';
 import { QueryEditorProps, SelectableValue } from '@grafana/data';
 import { DataSource } from './DataSource';
 import { defaultQuery, MyDataSourceOptions, MyQuery, PropertiesMap } from './types';
@@ -11,23 +11,40 @@ const { FormField, Select } = LegacyForms;
 type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
 
 export class QueryEditor extends PureComponent<Props> {
-  onStationIdChange = (event: ChangeEvent<HTMLInputElement>) => {
+  state = {
+    isLoadingStations: false,
+  };
+
+  onSearchStationSelected = async (station: SelectableValue) => {
     const { onChange, query, onRunQuery } = this.props;
-    onChange({ ...query, stationId: event.target.value });
+    onChange({ ...query, station });
     onRunQuery();
+  };
+
+  searchStations = async (searchTerm: string): Promise<Array<SelectableValue<string>>> => {
+    const { datasource } = this.props;
+    if (searchTerm.length < 3) {
+      return [];
+    }
+    this.setState({ ...this.state, isLoadingStations: true });
+    const result = await datasource.fetchStations(searchTerm);
+    this.setState({ ...this.state, isLoadingStations: false });
+    return result.data
+      .filter(station => station.active)
+      .map(station => {
+        return { label: station.name['en'], value: station.id, id: station.id };
+      });
   };
 
   onLatitudeChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onChange, query, onRunQuery } = this.props;
     onChange({ ...query, latitude: parseFloat(event.target.value) });
-    // executes the query
     onRunQuery();
   };
 
   onLongitudeChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onChange, query, onRunQuery } = this.props;
     onChange({ ...query, longitude: parseFloat(event.target.value) });
-    // executes the query
     onRunQuery();
   };
 
@@ -36,7 +53,6 @@ export class QueryEditor extends PureComponent<Props> {
     const properties = JSON.parse(JSON.stringify(query.properties));
     properties[index] = event.value;
     onChange({ ...query, properties });
-    // executes the query
     onRunQuery();
   };
 
@@ -45,20 +61,18 @@ export class QueryEditor extends PureComponent<Props> {
     const propertiesBefore = query.properties.slice(0, index);
     const propertiesAfter = query.properties.slice(index + 1);
     onChange({ ...query, properties: [...propertiesBefore, ...propertiesAfter] });
-    // executes the query
     onRunQuery();
   };
 
   onAddProperty = () => {
     const { onChange, query, onRunQuery } = this.props;
     onChange({ ...query, properties: [...query.properties, ''] });
-    // executes the query
     onRunQuery();
   };
 
   render() {
     const query = defaults(this.props.query, defaultQuery);
-    const { stationId, latitude, longitude, properties } = query;
+    const { station, latitude, longitude, properties } = query;
 
     const renderProperties = properties.map((property, index) => {
       return (
@@ -78,13 +92,15 @@ export class QueryEditor extends PureComponent<Props> {
     return (
       <div className="gf-form">
         <div className="gf-form-group">
-          <FormField
-            width={10}
-            value={stationId}
-            onChange={this.onStationIdChange}
-            label="StationId"
-            placeholder="Weather Station Id"
-            type="string"
+          <AsyncSelect
+            width={30}
+            isClearable
+            value={station}
+            isLoading={this.state.isLoadingStations}
+            loadOptions={this.searchStations}
+            noOptionsMessage="No stations found"
+            onChange={this.onSearchStationSelected}
+            placeholder="Weather Station"
           />
           <div className="gf-form-inline">
             <FormField

@@ -10,7 +10,14 @@ import {
 } from '@grafana/data';
 import { getBackendSrv } from '@grafana/runtime';
 
-import { ApiResponse, defaultQuery, MyDataSourceOptions, MyQuery, PropertiesMap } from './types';
+import {
+  ApiResponse,
+  ApiSearchStationResponse,
+  defaultQuery,
+  MyDataSourceOptions,
+  MyQuery,
+  PropertiesMap,
+} from './types';
 
 export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   url: string;
@@ -29,8 +36,8 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       options.targets.map(async target => {
         const query = defaults(target, defaultQuery);
         let fetchedData: ApiResponse;
-        if (query.stationId) {
-          fetchedData = await this.fetchByStationId(query.stationId, from, to);
+        if (query.station.id) {
+          fetchedData = await this.fetchByStationId(query.station.id, from, to);
         } else if (query.latitude && query.longitude) {
           fetchedData = await this.fetchByCoordinates(query.latitude, query.longitude, from, to);
         } else {
@@ -73,6 +80,10 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
 
   async fetchByCoordinates(latitude: number, longitude: number, start: string, end: string): Promise<ApiResponse> {
     return this.doRequest('/v2/point/hourly', { lat: latitude, lon: longitude, start, end });
+  }
+
+  async fetchStations(searchTerm: string): Promise<ApiSearchStationResponse> {
+    return this.doRequest('/v2/stations/search', { query: searchTerm });
   }
 
   async doRequest(url: string, parameters: { [key: string]: any }, maxRetries = 1): Promise<any> {
