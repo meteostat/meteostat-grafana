@@ -5,6 +5,7 @@ import {
   DataQueryResponse,
   DataSourceApi,
   DataSourceInstanceSettings,
+  dateTime,
   DateTime,
   FieldType,
   MutableDataFrame,
@@ -21,6 +22,8 @@ import {
   DailyApiResponse,
   AverageTemperatureProperties,
 } from './types';
+
+const TEST_STATION_ID = '10702';
 
 export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   url: string;
@@ -88,7 +91,8 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   }
 
   async testDatasource() {
-    // Implement a health check for your data source.
+    const now = dateTime();
+    await this.fetchByStationId(TEST_STATION_ID, now, now.subtract(1, 'days'), false);
     return {
       status: 'success',
       message: 'Success',
@@ -144,6 +148,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
         if (maxRetries > 0) {
           return this.doRequest(url, parameters, maxRetries - 1);
         }
+        console.error(error);
         throw error;
       });
   }
