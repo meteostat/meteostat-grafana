@@ -1,13 +1,21 @@
-# Grafana Data Source Plugin Template
+# Grafana Meteostat Data Source Plugin
+This repository contains a grafana datasource plugin for the weather api [meteostat](http://meteostat.net/).
 
-[![CircleCI](https://circleci.com/gh/grafana/simple-datasource/tree/master.svg?style=svg)](https://circleci.com/gh/grafana/simple-datasource/tree/master)
+## Installing
+> Prerequesites: You need to have a valid meteostat api key. Request one here https://auth.meteostat.net/ 
 
-This template is a starting point for building Grafana Data Source Plugins
+TODO: documentation on how to install this grafana plugin
 
-## What is Grafana Data Source Plugin?
-Grafana supports a wide range of data sources, including Prometheus, MySQL, and even Datadog. There’s a good chance you can already visualize metrics from the systems you have set up. In some cases, though, you already have an in-house metrics solution that you’d like to add to your Grafana dashboards. Grafana Data Source Plugins enables integrating such solutions with Grafana.
+### Configuring
+Go to the grafana dashboard and click on **Add data source**. Select **Meteostat** as the datasource and enter your personal API key.  
+Test the datasource and click on **Save & Test**.
 
-## Getting started
+In order to use the data source, create a new query and select the newly created **Meteostat** data source.  
+Then either search for a weather station, or use latitude and longitude in order to query weather data.  
+You should be able to see weather data for the selected time frame. 
+
+
+## Start Developing
 1. Install dependencies
 ```BASH
 yarn install
