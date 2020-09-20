@@ -22,6 +22,10 @@
       {
         "name": "Website",
         "url": "http://meteostat.net/"
+      },
+      {
+        "name": "Github",
+        "url": "https://github.com/kkoile/grafana-meteostat/"
       }
     ],
     "screenshots": [],
