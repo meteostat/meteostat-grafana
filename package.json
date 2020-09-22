@@ -1,6 +1,6 @@
 {
   "name": "meteostat-grafama",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Access historic weather data using the meteostat API",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
