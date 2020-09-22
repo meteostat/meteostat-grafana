@@ -1,5 +1,5 @@
 {
-  "name": "kkoile-grafana-meteostat",
+  "name": "meteostat-grafama",
   "version": "1.0.0",
   "description": "Access historic weather data using the meteostat API",
   "scripts": {

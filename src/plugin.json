@@ -7,7 +7,7 @@
     "description": "Access historic weather data using the meteostat API",
     "author": {
       "name": "Meteostat",
-      "url": "https://github.com/kkoile/grafana-meteostat/"
+      "url": "https://github.com/meteostat/meteostat-grafana"
     },
     "keywords": [
       "meteostat",
@@ -25,7 +25,7 @@
       },
       {
         "name": "Github",
-        "url": "https://github.com/kkoile/grafana-meteostat/"
+        "url": "https://github.com/meteostat/meteostat-grafana"
       }
     ],
     "screenshots": [],
