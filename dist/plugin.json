@@ -1,0 +1,51 @@
+{
+  "type": "datasource",
+  "name": "Meteostat",
+  "id": "meteostat",
+  "metrics": true,
+  "info": {
+    "description": "Access historic weather data using the meteostat API",
+    "author": {
+      "name": "Meteostat",
+      "url": "https://github.com/meteostat/meteostat-grafana"
+    },
+    "keywords": [
+      "meteostat",
+      "weather",
+      "temperature"
+    ],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Website",
+        "url": "http://meteostat.net/"
+      },
+      {
+        "name": "Github",
+        "url": "https://github.com/meteostat/meteostat-grafana"
+      }
+    ],
+    "screenshots": [],
+    "version": "0.1.0",
+    "updated": "2020-09-22"
+  },
+  "dependencies": {
+    "grafanaVersion": "6.5.x",
+    "plugins": []
+  },
+  "routes": [
+    {
+      "path": "meteostat",
+      "url": "https://api.meteostat.net",
+      "headers": [
+        {
+          "name": "x-api-key",
+          "content": "{{ .SecureJsonData.apiKey }}"
+        }
+      ]
+    }
+  ]
+}
