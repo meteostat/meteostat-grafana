@@ -1,7 +1,7 @@
 {
   "type": "datasource",
   "name": "Meteostat",
-  "id": "meteostat",
+  "id": "meteostat-meteostat-datasource",
   "metrics": true,
   "info": {
     "description": "Access historic weather data using the meteostat API",
