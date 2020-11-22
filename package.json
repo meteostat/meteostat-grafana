@@ -1,6 +1,6 @@
 {
   "name": "meteostat-grafama",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Access historic weather data using the meteostat API",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
@@ -11,12 +11,12 @@
   "author": "Nils Hirsekorn",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@grafana/data": "7.0.1",
-    "@grafana/toolkit": "7.0.1",
-    "@grafana/ui": "7.0.1",
-    "@types/lodash": "latest",
+    "@grafana/data": "^7.3.3",
+    "@grafana/toolkit": "^7.3.3",
+    "@grafana/ui": "^7.3.3",
     "@testing-library/jest-dom": "5.4.0",
-    "@testing-library/react": "^10.0.2"
+    "@testing-library/react": "^10.0.2",
+    "@types/lodash": "latest"
   },
   "engines": {
     "node": ">=12 <13"
