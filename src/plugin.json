@@ -28,7 +28,12 @@
         "url": "https://github.com/meteostat/meteostat-grafana"
       }
     ],
-    "screenshots": [],
+    "screenshots": [
+      {
+        "name": "Meteostat API",
+        "path": "img/screenshot.png"
+      }
+    ],
     "version": "%VERSION%",
     "updated": "%TODAY%"
   },
