@@ -3,7 +3,7 @@
   "version": "0.1.3",
   "description": "Access historic weather data using the meteostat API",
   "scripts": {
-    "build": "grafana-toolkit plugin:build",
+    "build": "grafana-toolkit plugin:build && cp DOC.md dist/README.md",
     "test": "grafana-toolkit plugin:test",
     "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch"
