@@ -18,13 +18,13 @@ jobs:
           node-version: 12.x
 
       - name: Install dependencies
-        run: yarn install
+        run: npm ci
 
       - name: Build plugin
-        run: yarn build
+        run: npm run build
 
       - name: Sign plugin
-        run: yarn run grafana-toolkit plugin:sign
+        run: npm run grafana-toolkit plugin:sign
         env:
           GRAFANA_API_KEY: ${{ secrets.GRAFANA_API_KEY }} # Requires a Grafana API key from Grafana.com.
 
