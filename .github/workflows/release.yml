@@ -24,7 +24,7 @@ jobs:
         run: npm run build
 
       - name: Sign plugin
-        run: npm run grafana-toolkit plugin:sign
+        run: yarn run grafana-toolkit plugin:sign
         env:
           GRAFANA_API_KEY: ${{ secrets.GRAFANA_API_KEY }} # Requires a Grafana API key from Grafana.com.
 
