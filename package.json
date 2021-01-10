@@ -1,5 +1,5 @@
 {
-  "name": "meteostat-grafama",
+  "name": "meteostat-grafana",
   "version": "0.1.4",
   "description": "Access historic weather data using the meteostat API",
   "scripts": {
