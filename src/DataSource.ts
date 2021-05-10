@@ -60,7 +60,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
           fields: [
             {
               name: 'Time',
-              values: fetchedData.data.map(
+              values: (fetchedData.data || []).map(
                 (data: { time?: string; time_local?: string; date?: string }) =>
                   data.time_local || data.time || data.date
               ),
@@ -77,7 +77,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
             propertiesToAdd.forEach((property) => {
               source.fields.push({
                 name: property.label,
-                values: fetchedData.data.map((data: { [x: string]: any }) => data[property.value]),
+                values: (fetchedData.data || []).map((data: { [x: string]: any }) => data[property.value]),
                 type: property.type,
               });
             });
