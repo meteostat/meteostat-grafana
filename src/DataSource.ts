@@ -38,7 +38,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     const rangeIsMoreThanTenDays = range!.to.diff(range!.from, 'days') >= 10;
 
     const data = await Promise.all(
-      options.targets.map(async target => {
+      options.targets.map(async (target) => {
         const query = defaults(target, defaultQuery);
         let fetchedData: any;
         if (query.station.id) {
@@ -68,13 +68,13 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
             },
           ],
         };
-        properties.forEach(property => {
+        properties.forEach((property) => {
           if (PropertiesMap[property]) {
             let propertiesToAdd = [PropertiesMap[property]];
             if (property === 'temp' && rangeIsMoreThanTenDays) {
               propertiesToAdd = AverageTemperatureProperties;
             }
-            propertiesToAdd.forEach(property => {
+            propertiesToAdd.forEach((property) => {
               source.fields.push({
                 name: property.label,
                 values: fetchedData.data.map((data: { [x: string]: any }) => data[property.value]),
@@ -128,13 +128,17 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     const startFormatted = start.format('YYYY-MM-DD');
     const endFormatted = end.format('YYYY-MM-DD');
     if (rangeIsMoreThanTenDays) {
-      return this.doRequest(`${url}/daily`, { ...parameters, start: startFormatted, end: endFormatted }) as Promise<
-        DailyApiResponse
-      >;
+      return this.doRequest(`${url}/daily`, {
+        ...parameters,
+        start: startFormatted,
+        end: endFormatted,
+      }) as Promise<DailyApiResponse>;
     }
-    return this.doRequest(`${url}/hourly`, { ...parameters, start: startFormatted, end: endFormatted }) as Promise<
-      HourlyApiResponse
-    >;
+    return this.doRequest(`${url}/hourly`, {
+      ...parameters,
+      start: startFormatted,
+      end: endFormatted,
+    }) as Promise<HourlyApiResponse>;
   }
 
   async fetchStations(searchTerm: string): Promise<ApiSearchStationResponse> {

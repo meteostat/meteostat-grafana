@@ -32,8 +32,8 @@ export class QueryEditor extends PureComponent<Props> {
     const result = await datasource.fetchStations(searchTerm);
     this.setState({ ...this.state, isLoadingStations: false });
     return result.data
-      .filter(station => station.active)
-      .map(station => {
+      .filter((station) => station.active)
+      .map((station) => {
         return { label: station.name['en'], value: station.id, id: station.id };
       });
   };
@@ -52,7 +52,7 @@ export class QueryEditor extends PureComponent<Props> {
 
   onPropertiesChange = (v: Array<SelectableValue<string>>) => {
     const { onChange, query, onRunQuery } = this.props;
-    onChange({ ...query, properties: v.map(_ => _.value!) ?? [] });
+    onChange({ ...query, properties: v.map((_) => _.value!) ?? [] });
     onRunQuery();
   };
 
@@ -88,7 +88,7 @@ export class QueryEditor extends PureComponent<Props> {
             <MultiSelect
               width={71}
               value={properties}
-              onChange={v => this.onPropertiesChange(v)}
+              onChange={(v) => this.onPropertiesChange(v)}
               placeholder="Property"
               options={Object.values(PropertiesMap)}
             />
