@@ -21,6 +21,7 @@ describe('Meteostat Datasource', () => {
    let doRequestSpy: any;
    beforeEach(() => {
      dummyQuery = {
+       intervalMs: 0,
        requestId: '1',
        dashboardId: 1,
        interval: '1',
@@ -37,7 +38,7 @@ describe('Meteostat Datasource', () => {
        targets: [],
        timezone: 'utc',
        app: CoreApp.Dashboard,
-       startTime: 0,
+       startTime: 0
      };
      dataSource = new DataSource(DUMMY_INSTANCE_SETTING);
      doRequestSpy = jest.spyOn(dataSource, 'doRequest')
@@ -268,6 +269,33 @@ describe('Meteostat Datasource', () => {
           fields: [
             expect.objectContaining({type: 'time', values: ['2020-02-01 00:00:00', '2020-02-01 01:00:00']}),
             expect.objectContaining({name: expect.stringContaining('Temperature'), type: 'number', values: [21, 22]})
+          ]
+        }))
+    });
+
+    it('should not fail if no data has been returned', async () => {
+      doRequestSpy.mockResolvedValueOnce({})
+      dummyQuery.targets = [
+        {
+          refId: '1',
+          station: { id: 'TEST_ID' },
+          latitude: undefined,
+          longitude: undefined,
+          properties: [
+            'temp'
+          ]
+        }
+      ];
+      const result = await dataSource.query(dummyQuery);
+      expect(doRequestSpy).toHaveBeenCalledWith('/v2/stations/hourly', {station: 'TEST_ID', start: '2020-02-01', end: '2020-02-03'});
+      expect(result.data.length).toEqual(1);
+      expect(result.data[0]).toBeInstanceOf(MutableDataFrame);
+      expect(result.data[0].toJSON()).toEqual(
+        expect.objectContaining({
+          refId: '1',
+          fields: [
+            expect.objectContaining({type: 'time', values: []}),
+            expect.objectContaining({name: expect.stringContaining('Temperature'), type: 'number', values: []})
           ]
         }))
     });
